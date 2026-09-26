@@ -5,30 +5,38 @@ mạng lưới đường bộ thực tế, lấy dữ liệu từ OpenStreetMap 
 
 Khu vực khảo sát: quanh toạ độ `(10.8494, 106.7537)` — TP. Thủ Đức, TP.HCM.
 
-![Mạng lưới đường Thủ Đức](thuduc.png)
+![Mạng lưới đường Thủ Đức](map.png)
 
 ## Nội dung
 
 | File | Mô tả |
 |------|-------|
-| `a.py` | Ứng dụng giao diện (Tkinter + tkintermapview): bấm 2 điểm trên bản đồ để tìm đường, có nút xem hoạt ảnh mô phỏng quá trình thuật toán duyệt các cạnh. |
-| `main.py` | Bản chạy dòng lệnh: tìm đường giữa 2 toạ độ cố định, xuất kết quả ra `map_sample.html` (bản đồ Folium). |
-| `inmap.py` | Tải đồ thị đường bộ và vẽ ra ảnh `thuduc.png`. |
-| `cache/` | Cache phản hồi từ Overpass API do `osmnx` tạo ra, giúp chạy lại không cần tải mạng. |
+| `main.py` | Ứng dụng giao diện (Tkinter + tkintermapview): bấm 2 điểm trên bản đồ để tìm đường, có nút xem hoạt ảnh mô phỏng quá trình thuật toán duyệt các cạnh. |
+| `printmap.py` | Tải đồ thị đường bộ (bán kính 2 km), in số đỉnh/cạnh và vẽ ra ảnh `map.png`. |
+| `map_sample.html` | Bản đồ Folium mẫu từ phiên bản cũ. |
+
+Khi chạy, `osmnx` tự tạo thư mục `cache/` để lưu dữ liệu tải từ OpenStreetMap,
+giúp các lần chạy sau nhanh hơn. Thư mục này đã được đưa vào `.gitignore`.
 
 ## Cài đặt
 
 ```bash
-pip install osmnx folium tkintermapview
+pip install osmnx tkintermapview
 ```
 
 ## Chạy
 
 ```bash
-python a.py        # giao diện tương tác
-python main.py     # xuất bản đồ ra map_sample.html
-python inmap.py    # vẽ mạng lưới đường ra thuduc.png
+python main.py       # giao diện tương tác
+python printmap.py   # vẽ mạng lưới đường ra map.png
 ```
+
+Cách dùng `main.py`:
+
+1. Bấm điểm thứ nhất trên bản đồ (điểm đầu, màu xanh).
+2. Bấm điểm thứ hai (điểm đích, màu đỏ) — đường ngắn nhất được vẽ màu xanh dương.
+3. Bấm **▶ Watch algorithm run** để xem hoạt ảnh các cạnh được duyệt.
+4. Bấm **Clear / Reselect** để chọn lại.
 
 ## Thuật toán
 
@@ -38,6 +46,5 @@ tìm đường có sẵn của `networkx`/`osmnx`:
 - Trọng số cạnh là `length` (độ dài đoạn đường, đơn vị mét) trong đồ thị OSM.
 - Mỗi đỉnh lấy ra khỏi hàng đợi được đánh dấu đã xét, bỏ qua nếu gặp lại.
 - Mảng `parent` dùng để truy ngược lại đường đi sau khi tới đích.
-
-Riêng trong `a.py`, thứ tự các cạnh được duyệt còn được ghi lại để vẽ hoạt ảnh
-minh hoạ cách thuật toán lan toả ra từ điểm xuất phát.
+- Thứ tự các cạnh được duyệt được ghi lại để vẽ hoạt ảnh minh hoạ cách thuật
+  toán lan toả ra từ điểm xuất phát.
